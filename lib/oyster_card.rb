@@ -1,7 +1,6 @@
-
-
-require './lib/journey.rb'
-require './lib/station.rb'
+require_relative 'journey'
+require_relative 'journeylog'
+require_relative 'station'
 
 class OysterCard
 
