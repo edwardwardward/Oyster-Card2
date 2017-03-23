@@ -91,7 +91,7 @@ let(:bermondsey) { Station.new("Bermondsey", 2) }
     oyster_card.top_up(10)
     oyster_card.touch_in(london_bridge)
     oyster_card.touch_out(bermondsey)
-    expect(oyster_card.trip.journey_history).to include ({london_bridge => bermondsey})
+    expect(oyster_card.journey_history).to include ({london_bridge => bermondsey})
   end
 end
   # In order to know how far I have travelled

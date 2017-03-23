@@ -3,13 +3,17 @@
 
 class Journey
 
+  MINIMUM_FARE = 1
+  PENALTY_FARE = 6
+
+  attr_reader :start, :finish, :fare
+
   def initialize
     @start = nil
     @finish = nil
-    @journey_history = []
+    @fare = MINIMUM_FARE
   end
 
-  attr_reader :start, :finish, :journey_history
 
   def add_start(station)
     self.start = station
@@ -24,15 +28,24 @@ class Journey
   end
 
   def end_journey
+    reset_fare
     self.start = nil
     self.finish = nil
   end
 
   def store_history
-    self.journey_history << {start => finish}
+    {start => finish}
+  end
+
+  def penalty_fare
+     self.fare = PENALTY_FARE
+  end
+
+  def reset_fare
+    self.fare = MINIMUM_FARE
   end
 
   private
 
-  attr_writer :start, :finish
+  attr_writer :start, :finish, :fare
 end
