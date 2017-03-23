@@ -11,81 +11,71 @@ describe OysterCard do
       expect(oyster_card).to respond_to(:balance)
     end
 
-    it "new instance has zero balance by default" do
+    it "defaults to 0 balance" do
       expect(oyster_card.balance).to eq(0)
     end
+  end
 
-
-    describe '#top_up' do
-
-      it 'expects to receive top_up with an argument and update balance' do
-        oyster_card.top_up(20)
-        expect(oyster_card.balance).to eq(20)
-      end
-
-      it 'expects to top_up to add amount to existing balance' do
-        oyster_card.top_up(20)
-        oyster_card.top_up(20)
-        expect(oyster_card.balance).to eq (40)
-      end
-
-      it 'expects top up after maximum balance reached to return error' do
-        expect {oyster_card.top_up(95)}.to raise_error("Cannot top up: maximum balance (£#{OysterCard::MAXIMUM_BALANCE}) exceeded")
-      end
+  describe '#top_up' do
+    it 'receive top_up value and update balance' do
+      oyster_card.top_up(20)
+      expect(oyster_card.balance).to eq(20)
     end
 
-    describe "#touch_in" do
+    it 'maximum balance raises error' do
+      expect {oyster_card.top_up(95)}.to raise_error("Cannot top up: maximum balance (£#{OysterCard::MAXIMUM_BALANCE}) exceeded")
+    end
+  end
 
-      it "raise exception when trying to touch_in twice" do
-        oyster_card.top_up(10)
-        oyster_card.touch_in(london_bridge)
-        expect { oyster_card.touch_in(london_bridge) }.to change{oyster_card.balance}.by -Journey::PENALTY_FARE
-      end
-
-      it "prevents the user from travelling with insufficient funds prevent from touching in unless they have a minimum balance of £1" do
-        expect{oyster_card.touch_in(london_bridge)}.to raise_error 'Cannot touch in: insufficient funds. Please top up'
-      end
-
-      it 'will record the station where the user touches in' do
-        oyster_card.top_up(10)
-        oyster_card.touch_in(london_bridge)
-        expect(oyster_card.trip.start).to eq london_bridge
-      end
+  describe "#touch_in" do
+    it "penalty charge when trying to touch_in twice" do
+      oyster_card.top_up(10)
+      oyster_card.touch_in(london_bridge)
+      expect { oyster_card.touch_in(london_bridge) }.to change{oyster_card.balance}.by -Journey::PENALTY_FARE
     end
 
-    describe "#touch_out" do
-
-      it 'should return in_journey as false after oyster on a journey calls touch_out' do
-        oyster_card.top_up(10)
-        oyster_card.touch_in(london_bridge)
-        oyster_card.touch_out(bermondsey)
-        expect(oyster_card.trip).not_to be_in_journey
-      end
-
-      it "rasie exception when user tries to touch out without touching in" do
-        expect { oyster_card.touch_out(bermondsey) }.to change{oyster_card.balance}.by -Journey::PENALTY_FARE
-      end
-
-      it 'deduct minimum fare from balance when touching out.' do
-        oyster_card.top_up(10)
-        oyster_card.touch_in(london_bridge)
-        expect {oyster_card.touch_out(bermondsey)}.to change{oyster_card.balance}.by -OysterCard::MINIMUM_BALANCE
-      end
-
-      it 'checks that entry_station is set to nil after touching out' do
-        oyster_card.top_up(10)
-        oyster_card.touch_in(london_bridge)
-        expect {oyster_card.touch_out(bermondsey)}.to change{oyster_card.trip.start}.to nil
-      end
+    it "minimum funds needed to travel" do
+      expect{oyster_card.touch_in(london_bridge)}.to raise_error 'Cannot touch in: insufficient funds. Please top up'
     end
 
-    describe"#journey_history" do
-      it 'will record entry station and exit station, and return journey history.' do
-        oyster_card.top_up(10)
-        oyster_card.touch_in(london_bridge)
-        oyster_card.touch_out(bermondsey)
-        expect(oyster_card.journey_history).to include ({london_bridge => bermondsey})
-      end
+    it 'records start station' do
+      oyster_card.top_up(10)
+      oyster_card.touch_in(london_bridge)
+      expect(oyster_card.trip.start).to eq london_bridge
+    end
+  end
+
+  describe "#touch_out" do
+    it 'not in journey' do
+      oyster_card.top_up(10)
+      oyster_card.touch_in(london_bridge)
+      oyster_card.touch_out(bermondsey)
+      expect(oyster_card.trip).not_to be_in_journey
+    end
+
+    it "penalty fare if no touch in" do
+      expect { oyster_card.touch_out(bermondsey) }.to change{oyster_card.balance}.by -Journey::PENALTY_FARE
+    end
+
+    it 'deduct minimum fare from balance' do
+      oyster_card.top_up(10)
+      oyster_card.touch_in(london_bridge)
+      expect {oyster_card.touch_out(bermondsey)}.to change{oyster_card.balance}.by -OysterCard::MINIMUM_BALANCE
+    end
+
+    it 'resets journey' do
+      oyster_card.top_up(10)
+      oyster_card.touch_in(london_bridge)
+      expect {oyster_card.touch_out(bermondsey)}.to change{oyster_card.trip.start}.to nil
+    end
+  end
+
+  describe "#journey_history" do
+    it 'complete journey stored in journey_history' do
+      oyster_card.top_up(10)
+      oyster_card.touch_in(london_bridge)
+      oyster_card.touch_out(bermondsey)
+      expect(oyster_card.journey_history).to include ({london_bridge => bermondsey})
     end
   end
 end
