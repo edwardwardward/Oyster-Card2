@@ -24,6 +24,12 @@ describe Journey do
     it 'returns false if journey has not started' do
       expect(journey).not_to be_in_journey
     end
-    end
+  end
 
+  describe "#penalty_fare" do
+    it 'checks a penalty fare can be set' do
+      journey.penalty_fare
+      expect(journey.fare).to eq Journey::PENALTY_FARE
+    end
+  end
 end
