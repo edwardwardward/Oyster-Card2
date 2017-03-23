@@ -47,11 +47,11 @@ let(:bermondsey) { Station.new("Bermondsey", 2) }
 
   it 'so the user can travel, allow user to touch in and out' do
     oyster_card.top_up(10)
-    expect(oyster_card.trip).not_to be_in_journey
+    expect(oyster_card.journeylog).not_to be_in_journey
     oyster_card.touch_in(london_bridge)
-    expect(oyster_card.trip).to be_in_journey
+    expect(oyster_card.journeylog).to be_in_journey
     oyster_card.touch_out(bermondsey)
-    expect(oyster_card.trip).not_to be_in_journey
+    expect(oyster_card.journeylog).not_to be_in_journey
   end
 
   #In order to pay for my journey
@@ -82,12 +82,12 @@ let(:bermondsey) { Station.new("Bermondsey", 2) }
   it 'record the station where the user touches in' do
     oyster_card.top_up(10)
     oyster_card.touch_in(london_bridge)
-    expect(oyster_card.trip.start).to eq london_bridge
+    expect(oyster_card.journeylog.start).to eq london_bridge
   end
 
   #   In order to know where I have been
   # As a customer
-  # I want to see to all my previous trips
+  # I want to see to all my previous journeylogs
 
   it 'record entry station and exit station, and return journey history' do
     oyster_card.top_up(10)

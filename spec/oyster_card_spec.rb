@@ -41,7 +41,7 @@ describe OysterCard do
     it 'records start station' do
       oyster_card.top_up(10)
       oyster_card.touch_in(london_bridge)
-      expect(oyster_card.trip.start).to eq london_bridge
+      expect(oyster_card.journeylog.start).to eq london_bridge
     end
   end
 
@@ -50,7 +50,7 @@ describe OysterCard do
       oyster_card.top_up(10)
       oyster_card.touch_in(london_bridge)
       oyster_card.touch_out(bermondsey)
-      expect(oyster_card.trip).not_to be_in_journey
+      expect(oyster_card.journeylog).not_to be_in_journey
     end
 
     it "penalty fare if no touch in" do
@@ -66,7 +66,7 @@ describe OysterCard do
     it 'resets journey' do
       oyster_card.top_up(10)
       oyster_card.touch_in(london_bridge)
-      expect {oyster_card.touch_out(bermondsey)}.to change{oyster_card.trip.start}.to nil
+      expect {oyster_card.touch_out(bermondsey)}.to change{oyster_card.journeylog.start}.to nil
     end
   end
 
